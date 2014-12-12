@@ -1,0 +1,20 @@
+{
+    "name": "pumpNotificationService",
+    "version": "0.0.1",
+    "author" : {
+        "name" : "Netzme"
+    },
+    "contributors": [
+        {
+            "name" : "Untung Ginardi",
+            "email" : "untung@netzme.id"
+        }
+    ],
+    "dependencies" : {
+        "sockjs-client": "1.0.0-beta.7",
+        "oauth": "0.9.12",
+        "form-data": "0.1.4",
+        "multer": "0.1.6",
+        "step": "0.0.5"
+    }
+}
