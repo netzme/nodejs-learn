@@ -6,7 +6,8 @@ var SockJS = require("sockjs-client"),
     FormData = require("form-data"),
     HTTP = require("http"),
     URL = require("url"),
-    Step = require("step");
+    Step = require("step"),
+    MQTT = require("mqtt");
 
 var data = require("./data/data"),
     config = require("./data/config");
@@ -20,6 +21,8 @@ var auth = new OAuth.OAuth(
     config.oauth.authorize,
     'HMAC-SHA1'
 );
+
+var mqttClient = MQTT.createClient(config.mqttServer.port, config.mqttServer.host);
 
 var userToken = {};
 
@@ -71,11 +74,11 @@ Step(
 );
 
 var handleIncommingMessage = function(sockClient, message) {
-    var incomming = JSON.parse(message.data);
-    if (incomming.cmd === 'challenge') {
-        replyChallenge(sockClient, incomming);
-    } else if ((incomming.cmd === 'update')) {
-        console.log(incomming.activity);
+    var incoming = JSON.parse(message.data);
+    if (incoming.cmd === 'challenge') {
+        replyChallenge(sockClient, incoming);
+    } else if ((incoming.cmd === 'update')) {
+        distributeActivity(incoming.activity);
     }
 }
 
@@ -100,4 +103,76 @@ var replyChallenge = function(sockClient, incoming){
     message.parameters.push(['oauth_timestamp', signedUrl.oauth_timestamp]);
     message.parameters.push(['oauth_signature', signedUrl.oauth_signature]);
     sockClient.send(JSON.stringify({cmd: 'rise', 'message': message}));
+}
+
+var distributeActivity = function(activity){
+    var actor = activity.actor,
+        cc = activity.cc,
+        verb = activity.verb,
+        object = activity.object;
+
+    Step(
+        function getFollowers(){
+            var followerUrl = URL.parse(cc[0].links.self.href, true);
+            HTTP.get({
+                host: config.pumpServer.host,
+                port: config.pumpServer.port,
+                path: followerUrl.path,
+                headers: {
+                    'Authorization': auth.authHeader(followerUrl.href, userToken.token, userToken.secret, 'GET'),
+                    'Cache-Control': 'no-cache'
+                }
+            }, this);
+        },
+        function responseGetFollower(followerResponse){
+            followerResponse.on('data', this);
+        },
+        function buildPublishToFollowerCommand(followers){
+            var data = JSON.parse(followers.toString()).items,
+                publishCmd = [];
+
+            for (i=0; i<data.length; i++){
+                switch (object.objectType) {
+                    case 'comment':
+                    case 'note' :
+                        publishCmd[i] = buildNoteCommand(data[i], actor, verb, object);
+                        break;
+                    case 'image' :
+                        publishCmd[i] = buildImageCommand(data[i], actor, verb, object);
+                        break;
+                }
+                mqttClient.publish(publishCmd[i].topic, JSON.stringify(publishCmd[i].message));
+            }
+        }
+    );
+}
+
+var buildNoteCommand = function(data, actor, verb, object){
+    return {
+        topic: '/' + data.displayName + '/notification',
+        message: {
+            'actor': actor.id,
+            'verb': verb,
+            'object' : {
+                'type': object.objectType,
+                'content' : object.content
+            }
+        }
+    };
+}
+
+var buildImageCommand = function(data, actor, verb, object){
+    return {
+        topic: '/' + data.displayName + '/notification',
+        message: {
+            'actor': actor.id,
+            'verb': verb,
+            'object' : {
+                'type': object.objectType,
+                'description': object.content,
+                'title': object.displayName,
+                'url': object.image.url
+            }
+        }
+    };
 }

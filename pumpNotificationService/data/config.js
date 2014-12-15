@@ -16,3 +16,7 @@ exports.oauth = {
 exports.websocket = {
     host : "http://" + this.pumpServer.host + "/main/realtime/sockjs"
 }
+exports.mqttServer = {
+    host: "localhost",
+    port: 10002
+}
