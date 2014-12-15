@@ -17,6 +17,6 @@ exports.websocket = {
     host : "http://" + this.pumpServer.host + "/main/realtime/sockjs"
 }
 exports.mqttServer = {
-    host: "localhost",
-    port: 10002
+    host: "54.169.189.66",
+    port: 1883
 }
