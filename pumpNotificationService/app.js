@@ -130,9 +130,11 @@ var distributeActivity = function(activity){
         function buildPublishToFollowerCommand(followers){
             var data = JSON.parse(followers.toString()).items,
                 publishCmd = [];
-
             for (i=0; i<data.length; i++){
                 switch (object.objectType) {
+                    case 'person' :
+                        publishCmd[i] = buildPersonCommand(data[i], actor, verb, object);
+                        break;
                     case 'comment':
                     case 'note' :
                         publishCmd[i] = buildNoteCommand(data[i], actor, verb, object);
@@ -172,6 +174,20 @@ var buildImageCommand = function(data, actor, verb, object){
                 'description': object.content,
                 'title': object.displayName,
                 'url': object.image.url
+            }
+        }
+    };
+}
+
+var buildPersonCommand = function(data, actor, verb, object){
+    return {
+        topic: '/' + data.displayName + '/notification',
+        message: {
+            'actor': actor.id,
+            'verb': verb,
+            'object' : {
+                'type': object.objectType,
+                'id' : object.id
             }
         }
     };
