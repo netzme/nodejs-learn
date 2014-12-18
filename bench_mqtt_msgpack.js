@@ -1,17 +1,19 @@
-var LOOP_COUNT = 10000;
+var LOOP_COUNT = 100;
 
-var mqtt = require('mqtt')
+var mqtt = require('mqtt');
+var msgpack = require('msgpack');
 
 var msg = createMessage();
 console.log('data length: ' + msg.length);
 console.log('loop count: ' + LOOP_COUNT);
 
-client = mqtt.createClient(1883, 'localhost');
+client = mqtt.createClient(1883, 'dev-netzme.duckdns.org');
 client.subscribe('notification/user');
 
 var rcvCounter = 0;
 client.on('message', function (topic, message) {
-	var msg = JSON.parse(message);
+    var buffer = new Buffer(message);
+	var msg = msgpack.unpack(buffer);
 	rcvCounter++;
 	
 	if (rcvCounter == LOOP_COUNT) {
@@ -38,7 +40,7 @@ function createMessage() {
 		mesg: 'The ads all call me fearless, but thats just publicity.'
 	}
 	
-	return JSON.stringify(message);
+	return msgpack.pack(message);
 }
 
 function getMiliseconds() {
