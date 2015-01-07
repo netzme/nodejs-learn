@@ -1,0 +1,8 @@
+package msg;
+
+message Chat {
+    required string from = 1;
+    required string rcpt = 2;
+    required int64 time = 3;
+    optional string mesg = 4;
+}
