@@ -6,7 +6,10 @@ task app cuma subscribe dan publish topik yg sama.
 var mqtt = require('mqtt')
 
 //conn ke localhost, gunakan mqttSimpleServer1.js
-client = mqtt.createClient(1883, 'localhost', {reconnectPeriod:0});
+client = mqtt.createClient(
+    1883,
+    'localhost',
+  {reconnectPeriod:0}); //0 -> no reconnect
 //connect to AWS
 //client = mqtt.createClient(1883, 'dev-netzme.duckdns.org');
 
@@ -27,6 +30,7 @@ client.on('error', function (err) {
 
 
 client.on('reconnect', function () {
+  //when connect failed, default action would be reconnecting.
   console.log('reconnecting dul');
 });
 
