@@ -1,39 +1,38 @@
+/**
+simple client untuk connect ke mqtt server.
+task app cuma subscribe dan publish topik yg sama.
+*/
+
 var mqtt = require('mqtt')
 
+//conn ke localhost, gunakan mqttSimpleServer1.js
 client = mqtt.createClient(1883, 'localhost', {reconnectPeriod:0});
 //connect to AWS
 //client = mqtt.createClient(1883, 'dev-netzme.duckdns.org');
 
 
-//console.log('before subscribe');
-//console.log(client);
-//client.conn.on('connack', function (packet) {
-//  console.log(packet);
-//});
 
 client.subscribe('presence/me');
 client.publish('presence/me', 'Hello mqtt');
 
 
 client.stream.on('error', function (err) {
-  //??
+  //when init connect failed, err event sent here
   console.log('listen error on stream object : ' + err);
+});
+client.on('error', function (err) {
+  //when init connect failed, no event sent here
+  console.log('listen error on client ' + err);
 });
 
 
 client.on('reconnect', function () {
   console.log('reconnecting dul');
 });
-client.on('error', function (err) {
-  //??
-  console.log('listen error on client ' + err);
-});
 
 
 client.on('connect', function () {
   console.log('connect');
-  //console.log('connected : ' + client.connected);
-
 });
 
 
