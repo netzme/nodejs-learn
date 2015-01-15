@@ -20,17 +20,17 @@ client.publish('presence/me', 'Hello mqtt');
 
 
 client.stream.on('error', function (err) {
-  //when init connect failed, err event sent here
+  //kalau connect failed, event error masuk sini
   console.log('listen error on stream object : ' + err);
 });
 client.on('error', function (err) {
-  //when init connect failed, no event sent here
+  //kalau connect failed, event error TIDAK masuk sini
   console.log('listen error on client ' + err);
 });
 
 
 client.on('reconnect', function () {
-  //when connect failed, default action would be reconnecting.
+  //kalau connect failed, defaultnya selalu reconnect
   console.log('reconnecting dul');
 });
 
@@ -47,5 +47,3 @@ client.on('message', function (topic, message) {
   console.log('end');
   client.end();
 });
-/*
-*/
