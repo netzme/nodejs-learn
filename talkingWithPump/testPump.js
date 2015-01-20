@@ -102,10 +102,12 @@ function testLoginWithWebInterface() {
             })
         }
 /*
+    contoh sample reply login lewat web interface, field token + secret dipakai lagi waktu menggunakan webSocket (testWebSocket())
  {"updated":"2015-01-15T08:13:31Z","published":"2015-01-15T08:13:31Z","profile":{"preferredUsername":"test01","url":"http://localhost:50001/test01","displayName":"test01","links":{"self":{"href":"http://localhost:50001/api/user/test01/profile"},"activity-inbox":{"href":"http://localhost:50001/api/user/test01/inbox"},"activity-outbox":{"href":"http://localhost:50001/api/user/test01/feed"}},"objectType":"person","followers":{"url":"http://localhost:50001/api/user/test01/followers","totalItems":2},"following":{"url":"http://localhost:50001/api/user/test01/following","totalItems":1},"favorites":{"url":"http://localhost:50001/api/user/test01/favorites","totalItems":0},"lists":{"url":"http://localhost:50001/api/user/test01/lists/person","totalItems":5},"updated":"2015-01-15T08:13:31Z","id":"http://localhost:50001/api/user/test01/profile"},
-    "nickname":"test01","token":"xD4WRqdipNjDveYENJXlNw","secret":"zveKtsW4qpSp3X-NYvJJIieiT84bl2FEkmL5-ZC6xis"}
-
- */
+    "nickname":"test01",
+    "token":"xD4WRqdipNjDveYENJXlNw",
+    "secret":"zveKtsW4qpSp3X-NYvJJIieiT84bl2FEkmL5-ZC6xis"}
+*/
     });
 
 }
@@ -138,7 +140,6 @@ function testWebSocket(){
             console.log('update ' + incoming.activity);
         }
 
-        //handleIncommingMessage(sockClient, msg);
     }
 
 }
@@ -167,7 +168,16 @@ var replyChallenge = function(sockClient, incoming, token, secret){
 }
 
 
-testWebSocket();
+//comment/uncomment jika ingin menjalankan masing2 contoh
+
+//koneksi pump.io lewat websocket utk push msg dr server
+testWebSocket();    //
+
+//mekanisme login lewat web
 //testLoginWithWebInterface()
+
+//login oauth, lum bisa
 //testOauthLogin();
+
+//mekanisme create user baru
 //testCreateUser();
